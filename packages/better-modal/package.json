@@ -1,0 +1,23 @@
+{
+	"name": "@buiducnhat/better-modal",
+	"version": "0.0.0",
+	"exports": {
+		".": "./src/index.ts",
+		"./*": "./src/*.ts"
+	},
+	"type": "module",
+	"scripts": {
+		"build": "tsdown"
+	},
+	"devDependencies": {
+		"@better-modal/config": "workspace:*",
+		"@types/react": "^19",
+		"tsdown": "catalog:"
+	},
+	"peerDependencies": {
+		"typescript": "catalog:",
+		"react": "^19",
+		"zustand": "^5"
+	},
+	"dependencies": {}
+}

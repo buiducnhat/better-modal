@@ -1,0 +1,68 @@
+# CLAUDE.md
+
+This file provides general guidance to Claude Code (claude.ai/code) for projects that follow this workflow.
+
+## Documentation Rules
+
+Documentation structure:
+
+```text
+docs/
+├── brainstorms/      # Long-term memory for exploration outputs
+├── plans/            # Long-term memory for implementation plans
+├── architecture.md   # Project architecture and system design
+├── code-standard.md  # Coding standards and conventions
+├── codebase.md       # Codebase map and key files
+└── project-pdr.md    # Product requirements and business context
+```
+
+**CRITICAL**: Documentation is essential for project success. Always follow these rules:
+
+1. **Always read project documentation first**  
+   Before planning or implementing any feature, read project documentation to understand context, requirements, and existing patterns.
+
+2. **Let documentation guide implementation**  
+   Use documentation as the source of truth. If documentation conflicts with implementation needs, clarify with the user instead of guessing.
+
+## Workflow Sequences
+
+Select the workflow based on task complexity:
+
+### 0. Project Bootstrap
+
+**Sequence**: `bootstrap` → `write-plan` → `execute-plan`
+**Use Case**: New projects or minimal scaffolds that need proper structure, documentation, and conventions before development begins.
+
+### 1. Complex Exploration
+
+**Sequence**: `brainstorm` → `write-plan` → `execute-plan`  
+**Use Case**: Ambiguous, complex, or high-risk tasks that require exploration and approach validation before planning.
+
+### 2. Standard Development
+
+**Sequence**: `write-plan` → `execute-plan`  
+**Use Case**: Well-defined but complex tasks, major features, or large refactors that need a structured plan.
+
+### 3. Rapid Implementation
+
+**Sequence**: `quick-implement`  
+**Use Case**: Small, low-risk tasks where formal planning would be unnecessary overhead.
+
+## Important Reminders
+
+### Interaction Preferences
+
+When asking questions during task execution:
+
+- Prefer interactive prompts with selectable options **when the current interface supports them**.
+- For 2-5 choices, prefer concise option menus.
+- If interactive options are not available, ask short, focused text questions.
+- Pause for a full user response only when:
+  - The question requires detailed explanation, or
+  - The user needs external context to answer.
+
+### Critical Rules
+
+- Always read project documentation before planning or implementation.
+- Ask clarifying questions when documentation is unclear or incomplete.
+- Follow every step in each workflow skill; do not skip required steps.

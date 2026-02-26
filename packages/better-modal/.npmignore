@@ -1,0 +1,16 @@
+# Source
+src/
+tsup.config.ts
+tsconfig.json
+biome.json
+
+# Dev
+*.test.ts
+*.spec.ts
+__tests__/
+coverage/
+.turbo/
+
+# Misc
+.DS_Store
+*.log
