@@ -48,3 +48,17 @@ coverage
 .cache
 tmp
 temp
+
+# Local agent artifacts
+docs/plans/
+docs/brainstorms/
+
+# Local agent skills
+AGENTS.md
+CLAUDE.md
+skills-lock.json
+.agents/
+.claude/
+.gemini/
+.gemini/
+.cursor/
