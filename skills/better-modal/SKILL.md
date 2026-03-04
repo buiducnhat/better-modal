@@ -1,10 +1,6 @@
 ---
 name: better-modal
-description: >
-  Guide for using @buiducnhat/better-modal — the headless, Promise-based React modal
-  state management library. Apply when writing, reviewing, or refactoring modal code
-  in any React app that uses this package. Covers installation, all public APIs,
-  React/Vercel best practices, TypeScript patterns, and common anti-patterns to avoid.
+description: "Guide for using @buiducnhat/better-modal — the headless, Promise-based React modal state management library. Apply when writing, reviewing, or refactoring modal code in any React app that uses this package. Covers installation, all public APIs, React/Vercel best practices, TypeScript patterns, and common anti-patterns to avoid."
 metadata:
   author: buiducnhat
   version: "1.0.0"
