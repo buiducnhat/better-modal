@@ -12,15 +12,18 @@
     },
     "packages/better-modal": {
       "name": "@buiducnhat/better-modal",
+      "version": "0.0.4",
+      "dependencies": {
+        "zustand": "^5",
+      },
       "devDependencies": {
         "@better-modal/config": "workspace:*",
-        "@types/react": "^19",
         "tsdown": "catalog:",
+        "typescript": "catalog:",
       },
       "peerDependencies": {
+        "@types/react": "^19",
         "react": "^19",
-        "typescript": "catalog:",
-        "zustand": "^5",
       },
     },
     "packages/config": {

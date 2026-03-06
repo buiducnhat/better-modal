@@ -1,7 +1,7 @@
 {
 	"name": "@buiducnhat/better-modal",
 	"description": "A small, headless React utility for declarative modal state management. Register modals once, open them from anywhere in your app, and await their results as Promises.",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"keywords": [
 		"modal",
 		"react",
@@ -42,13 +42,14 @@
 	},
 	"devDependencies": {
 		"@better-modal/config": "workspace:*",
-		"@types/react": "^19",
-		"tsdown": "catalog:"
+		"tsdown": "catalog:",
+		"typescript": "catalog:"
 	},
 	"peerDependencies": {
-		"typescript": "catalog:",
 		"react": "^19",
-		"zustand": "^5"
+		"@types/react": "^19"
 	},
-	"dependencies": {}
+	"dependencies": {
+		"zustand": "^5"
+	}
 }
