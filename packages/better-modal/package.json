@@ -50,7 +50,9 @@
 		}
 	},
 	"scripts": {
-		"build": "tsdown"
+		"build": "tsdown",
+		"prepublishOnly": "bun run build",
+		"check": "biome check --write"
 	},
 	"devDependencies": {
 		"@better-modal/config": "workspace:*",
