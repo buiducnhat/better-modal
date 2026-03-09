@@ -98,18 +98,18 @@ async function handleDelete() {
 
 ## Public API
 
-### `createModal(id, Component)` → `{ id, show, hide }`
+### `createModal(id, Component)` → `ModalController<TProps, TResult>`
 
-Registers a modal component and returns its control object.
+Registers a modal component and returns its typed control object.
 
-| Return | Type                          | Description                                   |
-| ------ | ----------------------------- | --------------------------------------------- |
-| `id`   | `string`                      | The ID used to register the modal             |
-| `show` | `(props?: T) => Promise<any>` | Opens the modal, returns an awaitable Promise |
-| `hide` | `() => void`                  | Closes without resolving the Promise          |
+| Return | Type                                   | Description                                   |
+| ------ | -------------------------------------- | --------------------------------------------- |
+| `id`   | `string`                               | The ID used to register the modal             |
+| `show` | `(props?: TProps) => Promise<TResult>` | Opens the modal, returns an awaitable Promise |
+| `hide` | `() => void`                           | Closes without resolving the Promise          |
 
 ```ts
-const MyModal = createModal<MyProps>("my-modal", MyComponent);
+const MyModal = createModal<MyProps, MyResult>("my-modal", MyComponent);
 
 const result = await MyModal.show({
   /* props */
@@ -121,7 +121,8 @@ MyModal.hide();
 
 - Call `createModal` at **module level** (outside components) — it registers once.
 - The `id` string must be globally unique across your app.
-- Generic `T` types the props passed to `show()`.
+- `TProps` types the props passed to `show()`. `TResult` types the resolved value.
+- If `TResult` is omitted, it defaults to `unknown`.
 
 ---
 
@@ -133,15 +134,15 @@ Subscribe to a modal's state from within its own component.
 const modal = useModal("my-modal");
 ```
 
-| Property  | Type                     | Description                                |
-| --------- | ------------------------ | ------------------------------------------ |
-| `visible` | `boolean`                | Whether the modal is currently open        |
-| `props`   | `T`                      | Props passed to `show()`                   |
-| `show`    | `(props?: T) => Promise` | Imperatively open this modal               |
-| `hide`    | `() => void`             | Close without resolving                    |
-| `resolve` | `(value: any) => void`   | Close + resolve the awaiting Promise       |
-| `reject`  | `(reason: any) => void`  | Close + reject the awaiting Promise        |
-| `remove`  | `() => void`             | Remove modal from store entirely (cleanup) |
+| Property  | Type                                    | Description                                |
+| --------- | --------------------------------------- | ------------------------------------------ |
+| `visible` | `boolean`                               | Whether the modal is currently open        |
+| `props`   | `unknown`                               | Props passed to `show()`                   |
+| `show`    | `(props?: unknown) => Promise<unknown>` | Imperatively open this modal               |
+| `hide`    | `() => void`                            | Close without resolving                    |
+| `resolve` | `(value: unknown) => void`              | Close + resolve the awaiting Promise       |
+| `reject`  | `(reason: unknown) => void`             | Close + reject the awaiting Promise        |
+| `remove`  | `() => void`                            | Remove modal from store entirely (cleanup) |
 
 > **Note:** `modal` is already injected as a prop by `ModalContainer` / `createModal` —
 > you only need to call `useModal` manually for more advanced use-cases.
@@ -172,6 +173,61 @@ registerModal("alert", AlertComponent);
 
 ---
 
+### Exported types — `ModalController`, `ModalComponentProps`
+
+```ts
+import type {
+  ModalController,
+  ModalComponentProps,
+} from "@buiducnhat/better-modal";
+```
+
+**`ModalController<TProps, TResult>`** — the type of the object returned by `createModal`:
+
+```ts
+interface ModalController<TProps = Record<string, unknown>, TResult = unknown> {
+  id: string;
+  show: (props?: TProps) => Promise<TResult>;
+  hide: () => void;
+}
+```
+
+Use it to type a variable that holds a modal reference:
+
+```ts
+let modal: ModalController<{ name: string }, boolean>;
+modal = createModal<{ name: string }, boolean>("name-modal", NameComponent);
+```
+
+**`ModalComponentProps<TProps, TResult>`** — helper type for explicitly typing a modal component's props:
+
+```ts
+type ModalComponentProps<TProps, TResult> = TProps & {
+  modal: { visible: boolean; props: TProps; show: ...; hide: ...; resolve: (val: TResult) => void; ... };
+};
+```
+
+```tsx
+import type { ModalComponentProps } from "@buiducnhat/better-modal";
+
+type MyProps = { title: string };
+type MyResult = boolean;
+
+function MyModalComponent({
+  title,
+  modal,
+}: ModalComponentProps<MyProps, MyResult>) {
+  return (
+    <dialog open={modal.visible}>
+      <h2>{title}</h2>
+      <button onClick={() => modal.resolve(true)}>OK</button>
+    </dialog>
+  );
+}
+```
+
+---
+
 ## TypeScript Best Practices
 
 ### Type props and result separately
@@ -180,7 +236,7 @@ registerModal("alert", AlertComponent);
 type ConfirmProps = { title: string };
 type ConfirmResult = boolean;
 
-export const ConfirmModal = createModal<ConfirmProps>(
+export const ConfirmModal = createModal<ConfirmProps, ConfirmResult>(
   "confirm",
   ({ title, modal }) => {
     const confirm = () => modal.resolve(true satisfies ConfirmResult);
@@ -308,6 +364,13 @@ try {
 <button onClick={() => modal.reject("cancelled")}>Cancel</button>;
 // ...without try/catch at the call site
 ```
+
+> **Note:** The library also rejects automatically in two edge cases:
+>
+> - **Reopen before resolve** — if `show()` is called while the modal is already open, the previous Promise is rejected with `Error("Modal '...' was reopened before resolving")`.
+> - **`remove()` before resolve** — if `modal.remove()` is called on an unresolved modal, the Promise is rejected with `Error("Modal '...' was removed before resolving")`.
+>
+> Always handle rejections at the `show()` call site.
 
 ### 7. Clean up with `modal.remove()` for modals with heavy side-effects
 

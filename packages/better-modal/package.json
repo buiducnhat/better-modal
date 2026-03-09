@@ -5,7 +5,11 @@
 	"keywords": [
 		"modal",
 		"react",
-		"zustand"
+		"zustand",
+		"headless",
+		"state management",
+		"declarative",
+		"typescript"
 	],
 	"homepage": "https://github.com/buiducnhat/better-modal#readme",
 	"bugs": {

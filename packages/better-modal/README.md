@@ -1,8 +1,29 @@
-# @buiducnhat/better-modal
+# better-modal
 
-A small, headless React utility for declarative modal state management. Register modals once, open them from anywhere in your app, and await their results as Promises.
+A lightweight React library for declarative modal state management — open modals imperatively from anywhere in your app and await their results as Promises.
 
-This README is shipped with the package on npm and contains the usage instructions that appear on the package page.
+**Stack:** TypeScript · React 19 · Zustand 5 · Bun · Turborepo · Biome
+
+---
+
+## Features
+
+- 🔌 **Drop-in** — place `<ModalContainer />` once in your app root, done
+- ⚡ **Imperative API** — call `Modal.show(props)` from anywhere, including outside React
+- 🤝 **Promise-based results** — `await Modal.show()` and get the user's response
+- 🎯 **Selective re-renders** — each modal subscribes only to its own Zustand slice
+- 🧩 **Headless & UI-agnostic** — works with any component library (MUI, shadcn, Radix, etc.)
+- 🔒 **Type-safe** — full TypeScript support for modal props
+
+---
+
+## Prerequisites
+
+- Node.js 18+ or Bun 1.x
+- React 19+
+- Zustand 5+
+
+---
 
 ## Installation
 
@@ -14,11 +35,11 @@ npm install @buiducnhat/better-modal zustand
 bun add @buiducnhat/better-modal zustand
 ```
 
-`react` and `zustand` are **peer dependencies** and must be installed by the consumer.
+---
 
-## Usage
+## Quick Start
 
-1. **Render the container** somewhere near your app root:
+### 1. Add `<ModalContainer />` to your app root
 
 ```tsx
 import { ModalContainer } from "@buiducnhat/better-modal";
@@ -33,38 +54,102 @@ function App() {
 }
 ```
 
-2. **Create a modal** using `createModal`:
+### 2. Create a modal
 
 ```tsx
 import { createModal } from "@buiducnhat/better-modal";
 
 const ConfirmModal = createModal(
   "confirm",
-  ({ modal, message }: { modal: any; message: string }) => (
+  ({ modal, title }: { modal: any; title: string }) => (
     <dialog open={modal.visible}>
-      <p>{message}</p>
-      <button onClick={() => modal.resolve(true)}>OK</button>
+      <p>{title}</p>
+      <button onClick={() => modal.resolve(true)}>Confirm</button>
       <button onClick={() => modal.resolve(false)}>Cancel</button>
     </dialog>
   ),
 );
 ```
 
-3. **Open the modal from anywhere** (inside or outside React components):
+### 3. Open it from anywhere
 
 ```ts
-const result = await ConfirmModal.show({ message: "Proceed with action?" });
-if (result) {
-  // user confirmed
+// Inside or outside React components
+const confirmed = await ConfirmModal.show({ title: "Delete this item?" });
+
+if (confirmed) {
+  deleteItem();
 }
 ```
 
-### API
+---
 
-- `createModal(id, Component)` — registers a modal and returns `{ id, show(props?), hide() }`.
-- `useModal(id)` — hook used inside the modal component to access state and control methods.
-- `<ModalContainer />` — renders active modals; must be mounted once.
-- `registerModal(id, Component)` — low-level registration helper.
+## API Reference
+
+### `createModal(id, Component)`
+
+Registers a modal component and returns a typed controller.
+
+```ts
+const Modal = createModal("my-modal", MyComponent);
+
+Modal.show(props); // → Promise<result>
+Modal.hide(); // close without resolving
+```
+
+### `useModal(id)`
+
+Hook to access modal state inside a modal component.
+
+```ts
+const modal = useModal("my-modal");
+
+modal.visible; // boolean — is the modal open?
+modal.props; // props passed to show()
+modal.resolve(val); // close + resolve the Promise
+modal.reject(err); // close + reject the Promise
+modal.hide(); // close without resolving
+modal.remove(); // remove from store entirely
+```
+
+### `<ModalContainer />`
+
+Place once at your app root. Renders all active modals.
+
+### `registerModal(id, Component)`
+
+Low-level alternative to `createModal` — registers a component without returning the controller.
+
+---
+
+## Documentation
+
+| Doc                                       | Description                             |
+| ----------------------------------------- | --------------------------------------- |
+| [Project PDR](./docs/project-pdr.md)      | Product requirements and roadmap        |
+| [Architecture](./docs/architecture.md)    | System design and data flow             |
+| [Codebase Map](./docs/codebase.md)        | File structure and public API reference |
+| [Code Standards](./docs/code-standard.md) | Conventions, naming, and tooling        |
+
+---
+
+## Development
+
+```bash
+# Install dependencies
+bun install
+
+# Type-check all packages
+bun run check-types
+
+# Lint and format
+bun run check
+
+# Build for publishing
+bun run build
+```
+
+---
 
 ## License
 
