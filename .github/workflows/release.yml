@@ -32,7 +32,7 @@ jobs:
       id-token: write
     defaults:
       run:
-        working-directory: packages/better-auth
+        working-directory: packages/better-modal
 
     steps:
       - name: Checkout
