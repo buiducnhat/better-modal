@@ -26,14 +26,14 @@ bun run check   # biome check --write .
 
 Also handled by **Biome**. Key rules enforced:
 
-| Rule                        | Level                               |
-| --------------------------- | ----------------------------------- |
-| `noExplicitAny`             | Off (allowed for internal generics) |
-| `noParameterAssign`         | Error                               |
-| `useAsConstAssertion`       | Error                               |
-| `useSelfClosingElements`    | Error                               |
-| `noUselessElse`             | Error                               |
-| `useExhaustiveDependencies` | Info (React hooks)                  |
+| Rule                        | Level                                        |
+| --------------------------- | -------------------------------------------- |
+| `noExplicitAny`             | Error (enforced — use `unknown` or generics) |
+| `noParameterAssign`         | Error                                        |
+| `useAsConstAssertion`       | Error                                        |
+| `useSelfClosingElements`    | Error                                        |
+| `noUselessElse`             | Error                                        |
+| `useExhaustiveDependencies` | Info (React hooks)                           |
 
 Run lint:
 
@@ -44,7 +44,7 @@ bun run check   # same command — Biome lints and formats together
 ## TypeScript
 
 - All packages extend `@better-modal/config/tsconfig.base.json`
-- No `noExplicitAny` enforcement — `any` is allowed for generic store internals
+- `any` is forbidden — use `unknown` or proper generics instead (`noExplicitAny: error` in Biome)
 - Exported types must be explicit (no `export *` without careful review)
 - Use `import type` for type-only imports
 

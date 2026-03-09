@@ -7,10 +7,15 @@ const ModalRenderer = ({ id }: { id: string }) => {
 	const Comp = modalRegistry.get(id);
 
 	if (!Comp) {
+		if (process.env.NODE_ENV !== "production") {
+			console.warn(
+				`[better-modal] No component registered for modal id "${id}". Did you call createModal or registerModal?`,
+			);
+		}
 		return null;
 	}
 
-	return <Comp {...modal.props} modal={modal} />;
+	return <Comp {...(modal.props as Record<string, unknown>)} modal={modal} />;
 };
 
 export const ModalContainer = () => {

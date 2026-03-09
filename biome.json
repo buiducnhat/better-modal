@@ -72,7 +72,7 @@
 				"noUselessElse": "error"
 			},
 			"suspicious": {
-				"noExplicitAny": "off"
+				"noExplicitAny": "error"
 			}
 		}
 	},

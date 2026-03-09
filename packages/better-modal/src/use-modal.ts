@@ -13,15 +13,15 @@ export const useModal = (id: ModalId) => {
 	const resolveAction = useModalStore((state) => state.resolve);
 	const rejectAction = useModalStore((state) => state.reject);
 
-	const show = useCallback((props?: any) => open(id, props), [id, open]);
+	const show = useCallback((props?: unknown) => open(id, props), [id, open]);
 	const hide = useCallback(() => hideAction(id), [id, hideAction]);
 	const remove = useCallback(() => removeAction(id), [id, removeAction]);
 	const resolve = useCallback(
-		(val: any) => resolveAction(id, val),
+		(val: unknown) => resolveAction(id, val),
 		[id, resolveAction],
 	);
 	const reject = useCallback(
-		(err: any) => rejectAction(id, err),
+		(err: unknown) => rejectAction(id, err),
 		[id, rejectAction],
 	);
 
@@ -29,7 +29,7 @@ export const useModal = (id: ModalId) => {
 	return useMemo(
 		() => ({
 			visible: !!modalState?.isOpen,
-			props: modalState?.props || {},
+			props: modalState?.props ?? {},
 			show,
 			hide,
 			remove,

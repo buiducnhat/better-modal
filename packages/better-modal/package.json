@@ -1,12 +1,16 @@
 {
 	"name": "@buiducnhat/better-modal",
 	"description": "A small, headless React utility for declarative modal state management. Register modals once, open them from anywhere in your app, and await their results as Promises.",
-	"version": "0.0.5",
+	"version": "0.0.6",
 	"keywords": [
 		"modal",
 		"react",
 		"zustand"
 	],
+	"homepage": "https://github.com/buiducnhat/better-modal#readme",
+	"bugs": {
+		"url": "https://github.com/buiducnhat/better-modal/issues"
+	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/buiducnhat/better-modal",
@@ -17,6 +21,10 @@
 		"name": "Nhat Bui",
 		"email": "nhaths4701@gmail.com"
 	},
+	"engines": {
+		"node": ">=18"
+	},
+	"sideEffects": false,
 	"type": "module",
 	"main": "./dist/index.cjs",
 	"module": "./dist/index.mjs",
