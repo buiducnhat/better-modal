@@ -7,6 +7,8 @@ export interface ModalState {
   reject?: (reason: unknown) => void;
   // We store the promise resolvers here to bridge the UI with the imperative call
   resolve?: (value: unknown) => void;
+  // Silent settle (no double-settle warnings); used by hide() to cancel a pending promise
+  cancel?: (reason: unknown) => void;
 }
 
 export interface ModalStore {
@@ -15,7 +17,6 @@ export interface ModalStore {
   open: (id: ModalId, props?: unknown) => Promise<unknown>;
 
   // Actions
-  register: (id: ModalId, entry: ModalState) => void;
   reject: (id: ModalId, reason: unknown) => void;
   remove: (id: ModalId) => void;
   resolve: (id: ModalId, value: unknown) => void;

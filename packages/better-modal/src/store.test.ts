@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
 import { createModal } from "./create-modal";
+import { ModalCancelledError } from "./errors";
 import { modalRegistry, useModalStore } from "./store";
 
 const resetState = () => {
@@ -85,7 +86,7 @@ describe("useModalStore.open", () => {
 });
 
 describe("useModalStore.hide", () => {
-  it("closes the modal and clears the settle callbacks", async () => {
+  it("cancels the pending promise and clears the settle callbacks", async () => {
     const promise = useModalStore.getState().open("confirm");
     useModalStore.getState().hide("confirm");
 
@@ -93,10 +94,10 @@ describe("useModalStore.hide", () => {
     expect(entry?.isOpen).toBe(false);
     expect(entry?.resolve).toBeUndefined();
     expect(entry?.reject).toBeUndefined();
+    expect(entry?.cancel).toBeUndefined();
 
-    // The promise is abandoned on hide; settle nothing. Guard test cleanup:
-    useModalStore.setState({ modals: {} });
-    void promise;
+    await expect(promise).rejects.toBeInstanceOf(ModalCancelledError);
+    await expect(promise).rejects.toThrow('Modal "confirm" was hidden before resolving');
   });
 });
 
@@ -114,8 +115,6 @@ describe("createModal", () => {
 
     controller.hide();
     expect(useModalStore.getState().modals.confirm?.isOpen).toBe(false);
-
-    useModalStore.setState({ modals: {} });
-    void promise;
+    await expect(promise).rejects.toBeInstanceOf(ModalCancelledError);
   });
 });

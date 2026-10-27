@@ -61,25 +61,27 @@ User code
 
 ```
 show(props)
-  → modals[id] = { isOpen: true, props, resolve, reject }
+  → modals[id] = { isOpen: true, props, resolve, reject, cancel }
   → ModalContainer renders <Component modal={...} />
   → Component calls modal.resolve(value) or modal.reject(reason)
   → store calls resolve/reject callback, then sets isOpen = false
   → Promise resolves/rejects in caller
+  → or Component calls modal.hide() (dismissal)
+  → Promise rejects with ModalCancelledError; resolvers are cleared
 ```
 
 ## State Management
 
 **Zustand** (`useModalStore`) is the single source of truth for all modal state.
 
-| Store slice          | Type                          | Description                             |
-| -------------------- | ----------------------------- | --------------------------------------- |
-| `modals`             | `Record<ModalId, ModalState>` | Map of all registered modal states      |
-| `open(id, props)`    | `() => Promise<unknown>`      | Opens a modal, stores Promise resolvers |
-| `hide(id)`           | `() => void`                  | Sets `isOpen = false` without resolving |
-| `remove(id)`         | `() => void`                  | Removes modal state from store entirely |
-| `resolve(id, value)` | `() => void`                  | Resolves Promise + hides modal          |
-| `reject(id, reason)` | `() => void`                  | Rejects Promise + hides modal           |
+| Store slice          | Type                          | Description                                                      |
+| -------------------- | ----------------------------- | ---------------------------------------------------------------- |
+| `modals`             | `Record<ModalId, ModalState>` | Map of all registered modal states                               |
+| `open(id, props)`    | `() => Promise<unknown>`      | Opens a modal, stores Promise resolvers                          |
+| `hide(id)`           | `() => void`                  | Cancels pending Promise (rejects `ModalCancelledError`) + closes |
+| `remove(id)`         | `() => void`                  | Removes modal state from store entirely                          |
+| `resolve(id, value)` | `() => void`                  | Resolves Promise + hides modal                                   |
+| `reject(id, reason)` | `() => void`                  | Rejects Promise + hides modal                                    |
 
 The `modalRegistry` is a plain `Map<ModalId, React.FC>` (not Zustand state) — it holds component references and never changes after registration.
 

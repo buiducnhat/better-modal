@@ -1,5 +1,7 @@
 import type React from "react";
 import { create } from "zustand";
+import { ModalCancelledError } from "./errors";
+import { isDev } from "./dev";
 import type { ModalId, ModalStore } from "./types";
 
 export const modalRegistry = new Map<ModalId, React.FC<Record<string, unknown>>>();
@@ -10,12 +12,6 @@ export const registerModal = (id: ModalId, Comp: React.FC<Record<string, unknown
 
 export const useModalStore = create<ModalStore>((set, get) => ({
   modals: {},
-
-  register: (id, entry) => {
-    set((state) => ({
-      modals: { ...state.modals, [id]: entry },
-    }));
-  },
 
   open: (id, props = {}) => {
     // Reject existing promise if modal is reopened before it resolves
@@ -29,7 +25,7 @@ export const useModalStore = create<ModalStore>((set, get) => ({
       let settled = false;
       const guardedResolve = (value: unknown) => {
         if (settled) {
-          if (process.env.NODE_ENV !== "production") {
+          if (isDev()) {
             console.warn(
               `[better-modal] Modal "${id}" resolve() called more than once — ignoring.`,
             );
@@ -41,9 +37,18 @@ export const useModalStore = create<ModalStore>((set, get) => ({
       };
       const guardedReject = (reason: unknown) => {
         if (settled) {
-          if (process.env.NODE_ENV !== "production") {
+          if (isDev()) {
             console.warn(`[better-modal] Modal "${id}" reject() called more than once — ignoring.`);
           }
+          return;
+        }
+        settled = true;
+        reject(reason);
+      };
+      // Settles a pending promise without double-settle warnings; no-op once settled.
+      // Used by hide() to cancel so awaiters of show() are never left hanging.
+      const cancel = (reason: unknown) => {
+        if (settled) {
           return;
         }
         settled = true;
@@ -59,6 +64,7 @@ export const useModalStore = create<ModalStore>((set, get) => ({
             props,
             resolve: guardedResolve,
             reject: guardedReject,
+            cancel,
           },
         },
       }));
@@ -66,20 +72,25 @@ export const useModalStore = create<ModalStore>((set, get) => ({
   },
 
   hide: (id) => {
+    const modal = get().modals[id];
+    if (!modal) {
+      return;
+    }
+    // Cancel a pending promise so awaiters of show() are not left hanging
+    modal.cancel?.(new ModalCancelledError(id));
     set((state) => {
-      if (!state.modals[id]) {
+      const current = state.modals[id];
+      if (!current) {
         return state;
       }
-      // Clear callbacks on hide to prevent stale references
-      const { resolve: _resolve, reject: _reject, ...rest } = state.modals[id];
+      // Clear settle callbacks on hide to prevent stale references
+      const { resolve: _resolve, reject: _reject, cancel: _cancel, ...rest } = current;
       return {
         modals: {
           ...state.modals,
           [id]: {
             ...rest,
             isOpen: false,
-            resolve: undefined,
-            reject: undefined,
           },
         },
       };

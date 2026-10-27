@@ -13,6 +13,8 @@ better-modal/
 │   │   │   ├── create-modal.ts        # createModal() — registers a modal, returns show/hide API
 │   │   │   ├── use-modal.ts           # useModal(id) — React hook for modal state & actions
 │   │   │   ├── modal-container.tsx    # <ModalContainer /> — renders all active modals
+│   │   │   ├── errors.ts              # ModalCancelledError — rejected when a modal is dismissed
+│   │   │   ├── dev.ts                 # isDev() — safe NODE_ENV check (browser-safe)
 │   │   │   └── store.test.ts          # Vitest suite — store + createModal machinery
 │   │   ├── vite.config.ts             # Vite+ pack config (library build)
 │   │   └── package.json
@@ -43,6 +45,8 @@ better-modal/
 | `packages/better-modal/src/create-modal.ts`     | Factory to register + expose a typed modal           |
 | `packages/better-modal/src/use-modal.ts`        | Hook used inside modal components                    |
 | `packages/better-modal/src/modal-container.tsx` | Must be placed once at the app root                  |
+| `packages/better-modal/src/errors.ts`           | `ModalCancelledError` — rejected on dismissal        |
+| `packages/better-modal/src/dev.ts`              | `isDev()` — browser-safe `NODE_ENV` check            |
 | `vite.config.ts`                                | Workspace lint/format rules (Oxlint + Oxfmt)         |
 | `packages/better-modal/vite.config.ts`          | Library build config (`vp pack` / tsdown)            |
 
@@ -83,7 +87,7 @@ const modal = useModal("confirm");
 // modal.visible   — boolean
 // modal.props     — the props passed to show()
 // modal.show()    — open the modal
-// modal.hide()    — close without resolving
+// modal.hide()    — close + cancel the Promise (rejects with ModalCancelledError)
 // modal.resolve() — close + resolve the Promise
 // modal.reject()  — close + reject the Promise
 // modal.remove()  — remove from store entirely

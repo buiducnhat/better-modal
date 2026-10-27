@@ -79,6 +79,19 @@ if (confirmed) {
 }
 ```
 
+Closing the modal without a result (e.g. backdrop click calling `modal.hide()`) rejects the promise with `ModalCancelledError` — catch it to ignore dismissal:
+
+```ts
+import { ModalCancelledError } from "@buiducnhat/better-modal";
+
+try {
+  const confirmed = await ConfirmModal.show({ title: "Delete this item?" });
+  if (confirmed) deleteItem();
+} catch (err) {
+  if (!(err instanceof ModalCancelledError)) throw err;
+}
+```
+
 ---
 
 ## API Reference
@@ -91,7 +104,7 @@ Registers a modal component and returns a typed controller.
 const Modal = createModal("my-modal", MyComponent);
 
 Modal.show(props); // → Promise<result>
-Modal.hide(); // close without resolving
+Modal.hide(); // close + cancel the Promise (rejects with ModalCancelledError)
 ```
 
 ### `useModal(id)`
@@ -105,7 +118,7 @@ modal.visible; // boolean — is the modal open?
 modal.props; // props passed to show()
 modal.resolve(val); // close + resolve the Promise
 modal.reject(err); // close + reject the Promise
-modal.hide(); // close without resolving
+modal.hide(); // close + cancel the Promise (rejects with ModalCancelledError)
 modal.remove(); // remove from store entirely
 ```
 
