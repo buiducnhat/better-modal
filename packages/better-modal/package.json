@@ -1,69 +1,69 @@
 {
-	"name": "@buiducnhat/better-modal",
-	"description": "A small, headless React utility for declarative modal state management. Register modals once, open them from anywhere in your app, and await their results as Promises.",
-	"version": "0.0.6",
-	"keywords": [
-		"modal",
-		"react",
-		"zustand",
-		"headless",
-		"state management",
-		"declarative",
-		"typescript"
-	],
-	"homepage": "https://github.com/buiducnhat/better-modal#readme",
-	"bugs": {
-		"url": "https://github.com/buiducnhat/better-modal/issues"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/buiducnhat/better-modal",
-		"directory": "packages/better-modal"
-	},
-	"author": {
-		"url": "https://github.com/buiducnhat",
-		"name": "Nhat Bui",
-		"email": "nhaths4701@gmail.com"
-	},
-	"engines": {
-		"node": ">=18"
-	},
-	"sideEffects": false,
-	"type": "module",
-	"main": "./dist/index.cjs",
-	"module": "./dist/index.mjs",
-	"types": "./dist/index.d.mts",
-	"files": [
-		"dist",
-		"README.md"
-	],
-	"exports": {
-		".": {
-			"import": {
-				"types": "./dist/index.d.mts",
-				"default": "./dist/index.mjs"
-			},
-			"require": {
-				"types": "./dist/index.d.cts",
-				"default": "./dist/index.cjs"
-			}
-		}
-	},
-	"scripts": {
-		"build": "tsdown",
-		"prepublishOnly": "bun run build",
-		"check": "biome check --write"
-	},
-	"devDependencies": {
-		"@better-modal/config": "workspace:*",
-		"tsdown": "catalog:",
-		"typescript": "catalog:"
-	},
-	"peerDependencies": {
-		"react": "^19",
-		"@types/react": "^19"
-	},
-	"dependencies": {
-		"zustand": "^5"
-	}
+  "name": "@buiducnhat/better-modal",
+  "version": "0.0.6",
+  "description": "A small, headless React utility for declarative modal state management. Register modals once, open them from anywhere in your app, and await their results as Promises.",
+  "keywords": [
+    "declarative",
+    "headless",
+    "modal",
+    "react",
+    "state management",
+    "typescript",
+    "zustand"
+  ],
+  "homepage": "https://github.com/buiducnhat/better-modal#readme",
+  "bugs": {
+    "url": "https://github.com/buiducnhat/better-modal/issues"
+  },
+  "author": {
+    "name": "Nhat Bui",
+    "email": "nhaths4701@gmail.com",
+    "url": "https://github.com/buiducnhat"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/buiducnhat/better-modal",
+    "directory": "packages/better-modal"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "scripts": {
+    "build": "vp pack",
+    "dev": "vp pack --watch",
+    "prepublishOnly": "bun run build"
+  },
+  "dependencies": {
+    "zustand": "^5.0.16"
+  },
+  "devDependencies": {
+    "@better-modal/config": "workspace:*",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
+  },
+  "peerDependencies": {
+    "@types/react": "^19.2.14",
+    "react": "^19.2.4"
+  },
+  "engines": {
+    "node": ">=18"
+  }
 }

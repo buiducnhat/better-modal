@@ -2,7 +2,7 @@
 
 A lightweight React library for declarative modal state management — open modals imperatively from anywhere in your app and await their results as Promises.
 
-**Stack:** TypeScript · React 19 · Zustand 5 · Bun · Turborepo · Biome
+**Stack:** TypeScript · React 19 · Zustand 5 · Bun · Vite+
 
 ---
 
@@ -59,16 +59,13 @@ function App() {
 ```tsx
 import { createModal } from "@buiducnhat/better-modal";
 
-const ConfirmModal = createModal(
-  "confirm",
-  ({ modal, title }: { modal: any; title: string }) => (
-    <dialog open={modal.visible}>
-      <p>{title}</p>
-      <button onClick={() => modal.resolve(true)}>Confirm</button>
-      <button onClick={() => modal.resolve(false)}>Cancel</button>
-    </dialog>
-  ),
-);
+const ConfirmModal = createModal("confirm", ({ modal, title }: { modal: any; title: string }) => (
+  <dialog open={modal.visible}>
+    <p>{title}</p>
+    <button onClick={() => modal.resolve(true)}>Confirm</button>
+    <button onClick={() => modal.resolve(false)}>Cancel</button>
+  </dialog>
+));
 ```
 
 ### 3. Open it from anywhere
@@ -139,11 +136,11 @@ Low-level alternative to `createModal` — registers a component without returni
 # Install dependencies
 bun install
 
-# Type-check all packages
-bun run check-types
-
-# Lint and format
+# Format, lint and type-check
 bun run check
+
+# Run tests
+bun run test
 
 # Build for publishing
 bun run build

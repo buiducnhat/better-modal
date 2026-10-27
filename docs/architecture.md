@@ -2,15 +2,14 @@
 
 ## Overview
 
-better-modal is a **Bun monorepo** managed by **Turborepo**. It contains one publishable library package and one shared config package.
+better-modal is a **Bun monorepo** built with **Vite+**. It contains one publishable library package and one shared config package.
 
 ```
 better-modal/                    # Monorepo root
 ├── packages/
 │   ├── better-modal/            # @buiducnhat/better-modal — main publishable library
 │   └── config/                  # @better-modal/config — shared TypeScript config
-├── biome.json                   # Shared linting + formatting config (Biome)
-├── turbo.json                   # Turborepo pipeline config
+├── vite.config.ts               # Vite+ config (lint, fmt) for the workspace
 ├── package.json                 # Root workspace manifest (Bun workspaces)
 └── bun.lock                     # Bun lockfile
 ```
@@ -28,7 +27,8 @@ src/
 ├── store.ts             # Zustand store + modalRegistry Map
 ├── create-modal.ts      # createModal() factory function
 ├── use-modal.ts         # useModal() React hook
-└── modal-container.tsx  # <ModalContainer /> React component
+├── modal-container.tsx  # <ModalContainer /> React component
+└── store.test.ts        # Vitest suite — store + createModal machinery
 ```
 
 ### `@better-modal/config` (`packages/config`)
@@ -75,7 +75,7 @@ show(props)
 | Store slice          | Type                          | Description                             |
 | -------------------- | ----------------------------- | --------------------------------------- |
 | `modals`             | `Record<ModalId, ModalState>` | Map of all registered modal states      |
-| `open(id, props)`    | `() => Promise<any>`          | Opens a modal, stores Promise resolvers |
+| `open(id, props)`    | `() => Promise<unknown>`      | Opens a modal, stores Promise resolvers |
 | `hide(id)`           | `() => void`                  | Sets `isOpen = false` without resolving |
 | `remove(id)`         | `() => void`                  | Removes modal state from store entirely |
 | `resolve(id, value)` | `() => void`                  | Resolves Promise + hides modal          |
@@ -85,19 +85,18 @@ The `modalRegistry` is a plain `Map<ModalId, React.FC>` (not Zustand state) — 
 
 ## Build System
 
-| Tool          | Role                                                                                     |
-| ------------- | ---------------------------------------------------------------------------------------- |
-| **Turborepo** | Task orchestration: `build`, `dev`, `check-types`, `lint` with dependency-aware ordering |
-| **tsdown**    | Bundles the library package into `dist/` for npm publishing                              |
-| **Biome**     | Linting and formatting across all packages (single config at root)                       |
-| **Bun**       | Package manager and workspace runner                                                     |
+| Tool      | Role                                                                                                                                  |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **Vite+** | Unified toolchain: `vp check` (Oxfmt + Oxlint + type check), `vp test` (Vitest), `vp pack` (tsdown build), `vp run` (workspace tasks) |
+| **Bun**   | Package manager and workspace runner                                                                                                  |
 
-### Turborepo task pipeline
+### Workspace tasks
 
 ```
-build     → outputs: dist/**   (depends on ^build)
-check-types → (depends on ^check-types)
-dev       → persistent, no cache
+bun run build → vp run -r build  → vp pack per package (dist/ output)
+bun run dev   → vp run -r dev    → vp pack --watch per package
+bun run check → vp check         → format + lint + type check
+bun run test  → vp test          → Vitest
 ```
 
 ## Deployment
@@ -105,9 +104,12 @@ dev       → persistent, no cache
 This is a library — it is deployed by publishing to npm:
 
 ```bash
-bun run build   # builds dist/ via tsdown
-npm publish     # publishes @buiducnhat/better-modal
+bun run build   # builds dist/ via vp pack (tsdown)
 ```
+
+Releases are automated: merging the release-please PR bumps the version and
+changelog, creates the GitHub release, and the `release.yml` workflow publishes
+`@buiducnhat/better-modal` to npm with provenance.
 
 No server, no database, no auth. Pure frontend library.
 

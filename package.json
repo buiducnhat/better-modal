@@ -1,47 +1,51 @@
 {
-	"name": "better-modal",
-	"description": "A small, headless React utility for declarative modal state management. Register modals once, open them from anywhere in your app, and await their results as Promises.",
-	"version": "0.0.1",
-	"keywords": [
-		"modal",
-		"react",
-		"zustand",
-		"headless",
-		"state management",
-		"declarative",
-		"typescript"
-	],
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/buiducnhat/better-modal"
-	},
-	"author": {
-		"url": "https://github.com/buiducnhat",
-		"name": "Nhat Bui",
-		"email": "nhaths4701@gmail.com"
-	},
-	"private": true,
-	"workspaces": {
-		"packages": [
-			"apps/*",
-			"packages/*"
-		],
-		"catalog": {
-			"tsdown": "^0.20.3",
-			"typescript": "^5"
-		}
-	},
-	"type": "module",
-	"scripts": {
-		"dev": "turbo dev",
-		"build": "turbo build",
-		"check-types": "turbo check-types",
-		"check": "biome check --write ."
-	},
-	"devDependencies": {
-		"@better-modal/config": "workspace:*",
-		"@biomejs/biome": "^2.2.0",
-		"turbo": "^2.6.3"
-	},
-	"packageManager": "bun@1.3.9"
+  "name": "better-modal",
+  "version": "0.0.1",
+  "private": true,
+  "description": "A small, headless React utility for declarative modal state management. Register modals once, open them from anywhere in your app, and await their results as Promises.",
+  "keywords": [
+    "declarative",
+    "headless",
+    "modal",
+    "react",
+    "state management",
+    "typescript",
+    "zustand"
+  ],
+  "author": {
+    "name": "Nhat Bui",
+    "url": "https://github.com/buiducnhat"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/buiducnhat/better-modal"
+  },
+  "workspaces": {
+    "packages": [
+      "apps/*",
+      "packages/*"
+    ],
+    "catalog": {
+      "typescript": "^7",
+      "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0",
+      "vite-plus": "1.4.0"
+    }
+  },
+  "type": "module",
+  "scripts": {
+    "build": "vp run -r build",
+    "check": "vp check",
+    "dev": "vp run -r dev",
+    "fix": "vp check --fix",
+    "test": "vp test"
+  },
+  "devDependencies": {
+    "@better-modal/config": "workspace:*",
+    "vite": "catalog:",
+    "vite-plus": "catalog:"
+  },
+  "overrides": {
+    "vite": "catalog:"
+  },
+  "packageManager": "bun@1.4.4"
 }

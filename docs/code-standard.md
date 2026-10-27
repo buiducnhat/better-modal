@@ -2,49 +2,46 @@
 
 ## Language & Runtime
 
-- **Language**: TypeScript (strict mode via shared `tsconfig.base.json`)
+- **Language**: TypeScript (strict mode in `packages/better-modal/tsconfig.json`)
 - **Runtime**: Bun (package manager + script runner)
-- **Target**: ESM only (`"type": "module"` in all packages)
+- **Module**: ESM source (`"type": "module"`); the library ships ESM + CJS builds
 
 ## Formatting
 
-Handled by **Biome** (`biome.json` at repo root). Do not use Prettier.
-
-| Rule                | Setting                     |
-| ------------------- | --------------------------- |
-| Indent style        | Tabs                        |
-| Quote style         | Double quotes (JS/TS)       |
-| Import organisation | Auto-sorted by Biome assist |
+Handled by **Oxfmt** via Vite+ (root `vite.config.ts`). Do not use Prettier or Biome.
 
 Run formatting:
 
 ```bash
-bun run check   # biome check --write .
+bun run fix     # vp check --fix — formats and applies safe lint fixes
+bun run check   # vp check — verifies format, lint and types (CI parity)
 ```
 
 ## Linting
 
-Also handled by **Biome**. Key rules enforced:
+Handled by **Oxlint** via Vite+ (root `vite.config.ts`). Key rules enforced:
 
-| Rule                        | Level                                        |
-| --------------------------- | -------------------------------------------- |
-| `noExplicitAny`             | Error (enforced — use `unknown` or generics) |
-| `noParameterAssign`         | Error                                        |
-| `useAsConstAssertion`       | Error                                        |
-| `useSelfClosingElements`    | Error                                        |
-| `noUselessElse`             | Error                                        |
-| `useExhaustiveDependencies` | Info (React hooks)                           |
+| Rule                             | Level                             |
+| -------------------------------- | --------------------------------- |
+| `typescript/no-explicit-any`     | Error (use `unknown` or generics) |
+| `typescript/no-inferrable-types` | Error                             |
+| `no-param-reassign`              | Error                             |
+| `default-param-last`             | Error                             |
+| `no-else-return`                 | Error                             |
+| `react/self-closing-comp`        | Error                             |
+| `react/rules-of-hooks`           | Error                             |
+| `react/exhaustive-deps`          | Warn (React hooks)                |
 
 Run lint:
 
 ```bash
-bun run check   # same command — Biome lints and formats together
+bun run check   # same command — vp check runs format + lint + type check
 ```
 
 ## TypeScript
 
-- All packages extend `@better-modal/config/tsconfig.base.json`
-- `any` is forbidden — use `unknown` or proper generics instead (`noExplicitAny: error` in Biome)
+- Type checking runs as part of `vp check` (type-aware Oxlint)
+- `any` is forbidden — use `unknown` or proper generics instead (`typescript/no-explicit-any: error`)
 - Exported types must be explicit (no `export *` without careful review)
 - Use `import type` for type-only imports
 
@@ -69,7 +66,8 @@ packages/better-modal/src/
 ├── store.ts            # Zustand store + modalRegistry
 ├── create-modal.ts     # createModal() factory
 ├── use-modal.ts        # useModal() hook
-└── modal-container.tsx # React components
+├── modal-container.tsx # React components
+└── store.test.ts       # Vitest tests (import from `vite-plus/test`)
 ```
 
 **Rules:**
@@ -88,28 +86,36 @@ packages/better-modal/src/
 
 ## Commit Style
 
-Free-form commit messages. Aim to be descriptive:
+Use **Conventional Commits** — release automation (release-please) derives the
+changelog and version bump from commit messages:
 
-✅ `add resolve/reject to useModal hook`
-✅ `fix: ModalContainer not cleaning up on unmount`
-✅ `refactor store to use set callback pattern`
+✅ `feat: add resolve/reject to useModal hook` → minor release
+✅ `fix: ModalContainer not cleaning up on unmount` → patch release
+✅ `refactor: store to use set callback pattern` → no release
 ❌ `update`
 ❌ `fix bug`
 
+`feat:` → minor, `fix:` → patch, `feat!:` / `BREAKING CHANGE:` → major.
+`docs:`, `chore:`, `refactor:` do not trigger releases.
+
 ## Build & Publish Checklist
 
-Before publishing `@buiducnhat/better-modal` to npm:
+Before releasing `@buiducnhat/better-modal` to npm:
 
-1. `bun run check-types` — must pass with zero errors
-2. `bun run check` — must pass with zero errors
+1. `bun run check` — must pass with zero errors
+2. `bun run test` — must pass
 3. `bun run build` — must produce `dist/` with correct exports
 4. Verify `package.json` exports map points to `dist/` (not `src/`)
-5. Bump version in `packages/better-modal/package.json`
-6. `npm publish --access public`
+5. Merge the release-please PR — `release.yml` publishes to npm with provenance
+
+For a manual release (e.g. toolchain-only changes that release-please won't
+pick up): bump the version in `packages/better-modal/package.json` and
+`.release-please-manifest.json`, then run `gh workflow run release.yml`.
 
 ## Dependencies Policy
 
-- **Zero runtime dependencies** in the library package (only Bun scripts and build tools as devDeps)
-- React and Zustand are **peer dependencies** — consumers must install them
+- The library has exactly one runtime dependency: **zustand**. Keep it that way.
+- React and `@types/react` are **peer dependencies** — consumers must install them
+- Build tooling (`typescript`, `vite-plus`) lives in `devDependencies`
 - Never add `dependencies` to the library `package.json` without a strong reason
 - Shared build config belongs in `packages/config`, not duplicated per package

@@ -1,9 +1,10 @@
-name: Release package to npm
+name: Release
 
 on:
   push:
-    tags:
-      - "v*"
+    branches:
+      - main
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -13,50 +14,51 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  create_release:
+  release-please:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-
+      pull-requests: write
+    outputs:
+      release_created: ${{ steps.release.outputs['packages/better-modal--release_created'] }}
     steps:
-      - name: Create GitHub release
-        uses: softprops/action-gh-release@v2
+      - name: Release PR or GitHub release
+        id: release
+        uses: googleapis/release-please-action@v5
         with:
-          generate_release_notes: true
+          config-file: .release-please-config.json
+          manifest-file: .release-please-manifest.json
 
   publish:
-    needs: create_release
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
       contents: read
       id-token: write
-    defaults:
-      run:
-        working-directory: packages/better-modal
-
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@v1.22.0
         with:
-          node-version: 20
-          registry-url: https://registry.npmjs.org
+          node-version: "24"
+          cache: true
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - name: Format, lint and type check
+        run: vp check
 
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Lint and format check
-        run: bun run check
+      - name: Test
+        run: vp test
 
       - name: Build
-        run: bun run build
+        run: vp run -r build
 
-      - name: Publish package
-        run: npm publish --access public --provenance
+      - name: Publish to npm
+        working-directory: packages/better-modal
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > "$HOME/.npmrc"
+          npm publish --access public --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

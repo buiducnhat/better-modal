@@ -39,11 +39,7 @@ Peer dependencies that must be installed separately:
 // app/layout.tsx (Next.js) or main.tsx (Vite)
 import { ModalContainer } from "@buiducnhat/better-modal";
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html>
       <body>
@@ -64,17 +60,14 @@ import type { useModal } from "@buiducnhat/better-modal";
 
 type Props = { title: string; message: string };
 
-export const ConfirmModal = createModal<Props>(
-  "confirm",
-  ({ title, message, modal }) => (
-    <dialog open={modal.visible}>
-      <h2>{title}</h2>
-      <p>{message}</p>
-      <button onClick={() => modal.resolve(true)}>Confirm</button>
-      <button onClick={() => modal.resolve(false)}>Cancel</button>
-    </dialog>
-  ),
-);
+export const ConfirmModal = createModal<Props>("confirm", ({ title, message, modal }) => (
+  <dialog open={modal.visible}>
+    <h2>{title}</h2>
+    <p>{message}</p>
+    <button onClick={() => modal.resolve(true)}>Confirm</button>
+    <button onClick={() => modal.resolve(false)}>Cancel</button>
+  </dialog>
+));
 ```
 
 ### Step 3 — Open the modal from anywhere
@@ -111,9 +104,7 @@ Registers a modal component and returns its typed control object.
 ```ts
 const MyModal = createModal<MyProps, MyResult>("my-modal", MyComponent);
 
-const result = await MyModal.show({
-  /* props */
-});
+const result = await MyModal.show({/* props */});
 MyModal.hide();
 ```
 
@@ -176,10 +167,7 @@ registerModal("alert", AlertComponent);
 ### Exported types — `ModalController`, `ModalComponentProps`
 
 ```ts
-import type {
-  ModalController,
-  ModalComponentProps,
-} from "@buiducnhat/better-modal";
+import type { ModalController, ModalComponentProps } from "@buiducnhat/better-modal";
 ```
 
 **`ModalController<TProps, TResult>`** — the type of the object returned by `createModal`:
@@ -213,10 +201,7 @@ import type { ModalComponentProps } from "@buiducnhat/better-modal";
 type MyProps = { title: string };
 type MyResult = boolean;
 
-function MyModalComponent({
-  title,
-  modal,
-}: ModalComponentProps<MyProps, MyResult>) {
+function MyModalComponent({ title, modal }: ModalComponentProps<MyProps, MyResult>) {
   return (
     <dialog open={modal.visible}>
       <h2>{title}</h2>
@@ -396,16 +381,13 @@ render-prop patterns.
 ```tsx
 // ✅ children prop — clear, composable
 type Props = { title: string; children: React.ReactNode };
-const DialogModal = createModal<Props>(
-  "dialog",
-  ({ title, children, modal }) => (
-    <dialog open={modal.visible}>
-      <h2>{title}</h2>
-      <div>{children}</div>
-      <button onClick={() => modal.hide()}>Close</button>
-    </dialog>
-  ),
-);
+const DialogModal = createModal<Props>("dialog", ({ title, children, modal }) => (
+  <dialog open={modal.visible}>
+    <h2>{title}</h2>
+    <div>{children}</div>
+    <button onClick={() => modal.hide()}>Close</button>
+  </dialog>
+));
 
 // Call site
 DialogModal.show({ title: "Info", children: <p>Some content</p> });
@@ -480,22 +462,17 @@ const confirmed = await ConfirmModal.show({
 type Props = { currentName: string };
 type Result = { name: string } | null;
 
-export const EditNameModal = createModal<Props>(
-  "edit-name",
-  ({ currentName, modal }) => {
-    const [name, setName] = React.useState(currentName);
+export const EditNameModal = createModal<Props>("edit-name", ({ currentName, modal }) => {
+  const [name, setName] = React.useState(currentName);
 
-    return (
-      <dialog open={modal.visible}>
-        <input value={name} onChange={(e) => setName(e.target.value)} />
-        <button onClick={() => modal.resolve({ name } satisfies Result)}>
-          Save
-        </button>
-        <button onClick={() => modal.resolve(null)}>Cancel</button>
-      </dialog>
-    );
-  },
-);
+  return (
+    <dialog open={modal.visible}>
+      <input value={name} onChange={(e) => setName(e.target.value)} />
+      <button onClick={() => modal.resolve({ name } satisfies Result)}>Save</button>
+      <button onClick={() => modal.resolve(null)}>Cancel</button>
+    </dialog>
+  );
+});
 
 // Usage
 const result = await EditNameModal.show({ currentName: "Alice" });
@@ -507,15 +484,12 @@ if (result) {
 ### Alert / notification (fire-and-forget)
 
 ```tsx
-export const AlertModal = createModal<{ message: string }>(
-  "alert",
-  ({ message, modal }) => (
-    <dialog open={modal.visible}>
-      <p>{message}</p>
-      <button onClick={modal.hide}>OK</button>
-    </dialog>
-  ),
-);
+export const AlertModal = createModal<{ message: string }>("alert", ({ message, modal }) => (
+  <dialog open={modal.visible}>
+    <p>{message}</p>
+    <button onClick={modal.hide}>OK</button>
+  </dialog>
+));
 
 // Fire-and-forget — no await needed
 AlertModal.show({ message: "Saved successfully!" });
@@ -524,12 +498,7 @@ AlertModal.show({ message: "Saved successfully!" });
 ### Using with shadcn/ui `<Dialog>`
 
 ```tsx
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { createModal } from "@buiducnhat/better-modal";
 
 type Props = { title: string };
@@ -555,10 +524,7 @@ import { createModal } from "@buiducnhat/better-modal";
 export const ConfirmModal = createModal<{ message: string }>(
   "radix-confirm",
   ({ message, modal }) => (
-    <Dialog.Root
-      open={modal.visible}
-      onOpenChange={(open) => !open && modal.resolve(false)}
-    >
+    <Dialog.Root open={modal.visible} onOpenChange={(open) => !open && modal.resolve(false)}>
       <Dialog.Portal>
         <Dialog.Overlay />
         <Dialog.Content>

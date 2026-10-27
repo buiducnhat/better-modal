@@ -54,4 +54,4 @@ No strict versioned roadmap. Development is iterative — features are added as 
 Package name: `@buiducnhat/better-modal`
 Registry: npm
 Entry point: `./src/index.ts` (dev) / `./dist` (built)
-Peer dependencies: `react ^19`, `zustand ^5`, `typescript catalog:`
+Peer dependencies: `react ^19`, `@types/react ^19` · Runtime dependency: `zustand ^5`

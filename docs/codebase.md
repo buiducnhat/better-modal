@@ -12,22 +12,25 @@ better-modal/
 │   │   │   ├── store.ts               # Zustand store (useModalStore) + modalRegistry Map
 │   │   │   ├── create-modal.ts        # createModal() — registers a modal, returns show/hide API
 │   │   │   ├── use-modal.ts           # useModal(id) — React hook for modal state & actions
-│   │   │   └── modal-container.tsx    # <ModalContainer /> — renders all active modals
+│   │   │   ├── modal-container.tsx    # <ModalContainer /> — renders all active modals
+│   │   │   └── store.test.ts          # Vitest suite — store + createModal machinery
+│   │   ├── vite.config.ts             # Vite+ pack config (library build)
 │   │   └── package.json
 │   └── config/
 │       ├── tsconfig.base.json         # Shared TypeScript base config
 │       └── package.json
 ├── docs/
 │   ├── project-pdr.md                 # Product requirements and business context
-│   ├── architecture.md               # System design and data flow
-│   ├── codebase.md                   # This file — codebase map
-│   └── code-standard.md              # Coding conventions and standards
-├── biome.json                         # Biome lint + format config (repo-wide)
-├── turbo.json                         # Turborepo pipeline: build, dev, check-types
+│   ├── architecture.md                # System design and data flow
+│   ├── codebase.md                    # This file — codebase map
+│   └── code-standard.md               # Coding conventions and standards
+├── .github/
+│   ├── workflows/ci.yml               # CI: format, lint, type check, test, build
+│   ├── workflows/release.yml          # Release-please + npm publish (provenance)
+│   └── dependabot.yml                 # Dependency + GitHub Actions updates
+├── vite.config.ts                     # Vite+ config (lint, fmt) for the workspace
 ├── package.json                       # Root workspace manifest (Bun workspaces)
-├── bun.lock                           # Bun lockfile
-├── bts.jsonc                          # Better-T-Stack scaffold config (safe to delete)
-└── CLAUDE.md                          # Claude Code project instructions
+└── bun.lock                           # Bun lockfile
 ```
 
 ## Key Files
@@ -40,8 +43,8 @@ better-modal/
 | `packages/better-modal/src/create-modal.ts`     | Factory to register + expose a typed modal           |
 | `packages/better-modal/src/use-modal.ts`        | Hook used inside modal components                    |
 | `packages/better-modal/src/modal-container.tsx` | Must be placed once at the app root                  |
-| `biome.json`                                    | Single source of truth for lint/format rules         |
-| `turbo.json`                                    | Task dependency graph for all packages               |
+| `vite.config.ts`                                | Workspace lint/format rules (Oxlint + Oxfmt)         |
+| `packages/better-modal/vite.config.ts`          | Library build config (`vp pack` / tsdown)            |
 
 ## Public API (`@buiducnhat/better-modal`)
 
@@ -71,7 +74,7 @@ const ConfirmModal = createModal("confirm", ({ modal, title }) => (
 const result = await ConfirmModal.show({ title: "Are you sure?" });
 ```
 
-Returns: `{ id: string, show(props?) => Promise<any>, hide() => void }`
+Returns: `{ id: string, show(props?) => Promise<TResult>, hide() => void }`
 
 ### `useModal(id)`
 
@@ -103,21 +106,23 @@ Low-level registration without the `show/hide` return API. Used internally by `c
 
 ```
 @buiducnhat/better-modal
+  dependencies:
+    zustand ^5
   peerDependencies:
     react ^19
-    zustand ^5
-    typescript (catalog)
+    @types/react ^19
   devDependencies:
     @better-modal/config (workspace)
-    @types/react ^19
-    tsdown (catalog)
+    typescript (catalog)
+    vite-plus (catalog)
 ```
 
 ## Scripts
 
-| Command               | What it does                                   |
-| --------------------- | ---------------------------------------------- |
-| `bun run dev`         | Turborepo dev mode (watch) across all packages |
-| `bun run build`       | Build all packages via Turborepo → tsdown      |
-| `bun run check-types` | TypeScript type-check across all packages      |
-| `bun run check`       | Biome lint + format (writes fixes in place)    |
+| Command         | What it does                                 |
+| --------------- | -------------------------------------------- |
+| `bun run dev`   | Watch-mode library build (`vp pack --watch`) |
+| `bun run build` | Build all packages via `vp run` → `vp pack`  |
+| `bun run check` | Format + lint + type check (`vp check`)      |
+| `bun run fix`   | Same as check, but writes fixes in place     |
+| `bun run test`  | Run the Vitest suite (`vp test`)             |

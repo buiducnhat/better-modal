@@ -3,31 +3,30 @@ import { modalRegistry, useModalStore } from "./store";
 import { useModal } from "./use-modal";
 
 const ModalRenderer = ({ id }: { id: string }) => {
-	const modal = useModal(id);
-	const Comp = modalRegistry.get(id);
+  const modal = useModal(id);
+  const Comp = modalRegistry.get(id);
 
-	if (!Comp) {
-		if (process.env.NODE_ENV !== "production") {
-			console.warn(
-				`[better-modal] No component registered for modal id "${id}". Did you call createModal or registerModal?`,
-			);
-		}
-		return null;
-	}
+  if (!Comp) {
+    if (process.env.NODE_ENV !== "production") {
+      console.warn(
+        `[better-modal] No component registered for modal id "${id}". Did you call createModal or registerModal?`,
+      );
+    }
+    return null;
+  }
 
-	return <Comp {...(modal.props as Record<string, unknown>)} modal={modal} />;
+  // oxlint-disable-next-line react/static-components -- Comp is a stable component from the registry, not created during render
+  return <Comp {...(modal.props as Record<string, unknown>)} modal={modal} />;
 };
 
 export const ModalContainer = () => {
-	const activeIds = useModalStore(
-		useShallow((state) => Object.keys(state.modals)),
-	);
+  const activeIds = useModalStore(useShallow((state) => Object.keys(state.modals)));
 
-	return (
-		<>
-			{activeIds.map((id) => (
-				<ModalRenderer id={id} key={id} />
-			))}
-		</>
-	);
+  return (
+    <>
+      {activeIds.map((id) => (
+        <ModalRenderer id={id} key={id} />
+      ))}
+    </>
+  );
 };
