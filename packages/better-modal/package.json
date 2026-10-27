@@ -1,6 +1,6 @@
 {
   "name": "@buiducnhat/better-modal",
-  "version": "0.0.8",
+  "version": "1.0.0",
   "description": "A small, headless React utility for declarative modal state management. Register modals once, open them from anywhere in your app, and await their results as Promises.",
   "keywords": [
     "declarative",
