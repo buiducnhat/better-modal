@@ -1,4 +1,5 @@
 import { useShallow } from "zustand/react/shallow";
+import { isDev } from "./dev";
 import { modalRegistry, useModalStore } from "./store";
 import { useModal } from "./use-modal";
 
@@ -7,7 +8,7 @@ const ModalRenderer = ({ id }: { id: string }) => {
   const Comp = modalRegistry.get(id);
 
   if (!Comp) {
-    if (process.env.NODE_ENV !== "production") {
+    if (isDev()) {
       console.warn(
         `[better-modal] No component registered for modal id "${id}". Did you call createModal or registerModal?`,
       );
