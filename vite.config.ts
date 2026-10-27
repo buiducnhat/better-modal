@@ -1,7 +1,11 @@
 import { defineConfig } from "vite-plus";
 
 export default defineConfig({
-  fmt: {},
+  fmt: {
+    // Release-please generates CHANGELOG.md with its own bullet style;
+    // do not let the formatter gate the publish pipeline on it.
+    ignorePatterns: ["**/CHANGELOG.md"],
+  },
   lint: {
     jsPlugins: [{ name: "vite-plus", specifier: "vite-plus/oxlint-plugin" }],
     plugins: ["typescript", "react"],
