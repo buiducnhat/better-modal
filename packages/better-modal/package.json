@@ -52,7 +52,7 @@
     "prepublishOnly": "bun run build"
   },
   "dependencies": {
-    "zustand": "^5.0.16"
+    "zustand": "^5.1.0"
   },
   "devDependencies": {
     "@better-modal/config": "workspace:*",
@@ -60,8 +60,8 @@
     "vite-plus": "catalog:"
   },
   "peerDependencies": {
-    "@types/react": "^19.2.14",
-    "react": "^19.2.4"
+    "@types/react": "^19.3.0",
+    "react": "^19.3.1"
   },
   "engines": {
     "node": ">=18"
